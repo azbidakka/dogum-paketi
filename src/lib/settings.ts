@@ -1,0 +1,120 @@
+import "server-only";
+import crypto from "node:crypto";
+import { promises as fs } from "node:fs";
+import path from "node:path";
+import { STORAGE_DIR } from "@/lib/content/store";
+
+/**
+ * Panelden yönetilen e-posta ayarları. İçerik dosyasından ayrı tutulur:
+ * içerik yedeklenip geri yüklenirken şifre taşınmaz.
+ *
+ * Sunucu bilgileri sanalanjiyo.tusahastanesi.com kurulumuyla aynıdır:
+ * TUSA Hastanesi Exchange sunucusu, 587 + STARTTLS.
+ */
+const SETTINGS_FILE = path.join(STORAGE_DIR, "settings.json");
+
+export type MailSettings = {
+  enabled: boolean;
+  host: string;
+  port: number;
+  /** 465 için true (örtük TLS); 587 için false (STARTTLS). */
+  secure: boolean;
+  requireTls: boolean;
+  /** Kendinden imzalı sertifikalarda kapatılabilir. */
+  rejectUnauthorized: boolean;
+  user: string;
+  /** Şifrelenmiş olarak saklanır; hiçbir zaman düz metin dönmez. */
+  passwordEnc: string | null;
+  fromName: string;
+  fromAddress: string;
+  /** Bildirimlerin gideceği adresler, virgülle ayrılır. */
+  to: string;
+  subjectPrefix: string;
+  /** Yanıtla düğmesi doğrudan talebi bırakan kişiye gitsin mi? */
+  replyToSubmitter: boolean;
+};
+
+export type Settings = { mail: MailSettings };
+
+export const defaultSettings: Settings = {
+  mail: {
+    enabled: false,
+    host: "mail.tusahastanesi.com",
+    port: 587,
+    secure: false,
+    requireTls: true,
+    rejectUnauthorized: true,
+    // Exchange oturum açma adı, SMTP adresinden farklıdır:
+    // posta alanı tusahastanesi.com, Active Directory alanı gisbirhastanesi.local.
+    user: "info@gisbirhastanesi.local",
+    passwordEnc: null,
+    fromName: "TUSA Hastanesi — Doğum Paketi",
+    fromAddress: "info@tusahastanesi.com",
+    to: "info@tusahastanesi.com",
+    subjectPrefix: "[Doğum Paketi]",
+    replyToSubmitter: false,
+  },
+};
+
+export async function getSettings(): Promise<Settings> {
+  try {
+    const stored = JSON.parse(await fs.readFile(SETTINGS_FILE, "utf8")) as Partial<Settings>;
+    return { mail: { ...defaultSettings.mail, ...stored.mail } };
+  } catch {
+    return defaultSettings;
+  }
+}
+
+export async function saveSettings(settings: Settings): Promise<void> {
+  await fs.mkdir(STORAGE_DIR, { recursive: true });
+  const temporary = `${SETTINGS_FILE}.${process.pid}.tmp`;
+  await fs.writeFile(temporary, JSON.stringify(settings, null, 2), {
+    encoding: "utf8",
+    mode: 0o600,
+  });
+  await fs.rename(temporary, SETTINGS_FILE);
+}
+
+/* ------------------------------------------------------------- şifreleme */
+
+function secretKey(): Buffer {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) {
+    throw new Error("ADMIN_SESSION_SECRET tanımlı değil; e-posta şifresi güvenle saklanamaz.");
+  }
+  return crypto.scryptSync(secret, "tusa-settings-v1", 32);
+}
+
+/** Değeri AES-256-GCM ile şifreler. Anahtar ADMIN_SESSION_SECRET'ten türetilir. */
+export function encryptSecret(value: string): string {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", secretKey(), iv);
+  const data = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
+
+  return [
+    "v1",
+    iv.toString("base64"),
+    cipher.getAuthTag().toString("base64"),
+    data.toString("base64"),
+  ].join(":");
+}
+
+/** Çözülemezse null döner (ör. ADMIN_SESSION_SECRET değişmişse). */
+export function decryptSecret(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const [version, iv, tag, data] = value.split(":");
+    if (version !== "v1" || !iv || !tag || !data) return null;
+
+    const decipher = crypto.createDecipheriv("aes-256-gcm", secretKey(), Buffer.from(iv, "base64"));
+    decipher.setAuthTag(Buffer.from(tag, "base64"));
+
+    return Buffer.concat([
+      decipher.update(Buffer.from(data, "base64")),
+      decipher.final(),
+    ]).toString("utf8");
+  } catch {
+    return null;
+  }
+}
