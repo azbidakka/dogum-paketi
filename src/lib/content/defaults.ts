@@ -6,7 +6,7 @@ import {
   TRIMESTERS,
 } from "@/data/content";
 import { DOCTORS } from "@/data/doctors";
-import { MEDIA, SITE } from "@/data/site";
+import { GALLERY, MEDIA, SITE } from "@/data/site";
 import type { SiteContent } from "./schema";
 
 /**
@@ -71,5 +71,6 @@ export const DEFAULT_CONTENT: SiteContent = {
       src: MEDIA.hospital,
       alt: `${SITE.name} binası ve ana girişi — ${SITE.address.street}, ${SITE.address.district}`,
     },
+    gallery: GALLERY.map((item) => ({ src: item.src, title: item.title, alt: item.alt })),
   },
 };

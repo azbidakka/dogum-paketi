@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { GALLERY } from "@/data/site";
 
 /**
  * Yönetim panelinden düzenlenebilen içeriğin şeması.
@@ -131,12 +132,25 @@ export const schoolSchema = z.object({
   topics: z.array(z.object({ title: requiredText(120), by: requiredText(120) })).max(10),
 });
 
+/** "05 · Odalar & Hastane" galerisi; ilk görsel büyük gösterilir. */
+export const galleryItemSchema = z.object({
+  src: imagePath,
+  title: requiredText(60),
+  alt: requiredText(300),
+});
+
 export const imagesSchema = z.object({
   hero: imageSchema,
   tracking: imageSchema,
   cta: imageSchema,
   school: imageSchema,
   location: imageSchema,
+  // Galeri sonradan eklendi; eski kayıtlarda yoksa resmi galeri görselleri kullanılır.
+  gallery: z
+    .array(galleryItemSchema)
+    .min(1, "Galeride en az bir görsel olmalı.")
+    .max(12, "Galeriye en fazla 12 görsel eklenebilir.")
+    .default(() => GALLERY.map((item) => ({ ...item }))),
 });
 
 export const SECTION_SCHEMAS = {
@@ -163,3 +177,4 @@ export type DoctorsContent = SiteContent["doctors"];
 export type SchoolContent = SiteContent["school"];
 export type ImagesContent = SiteContent["images"];
 export type ImageContent = z.infer<typeof imageSchema>;
+export type GalleryItem = z.infer<typeof galleryItemSchema>;

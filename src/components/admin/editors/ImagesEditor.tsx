@@ -1,10 +1,12 @@
 "use client";
 
 import EditorShell from "@/components/admin/EditorShell";
-import { ImageField, Panel } from "@/components/admin/fields";
+import { ImageField, ListEditor, Panel, TextField, moveItem } from "@/components/admin/fields";
 import type { ImagesContent } from "@/lib/content/schema";
 
-const SLOTS: { key: keyof ImagesContent; label: string; hint: string; aspect: string }[] = [
+type SlotKey = Exclude<keyof ImagesContent, "gallery">;
+
+const SLOTS: { key: SlotKey; label: string; hint: string; aspect: string }[] = [
   {
     key: "hero",
     label: "Ana görsel (sayfa girişi)",
@@ -62,6 +64,46 @@ export default function ImagesEditor({
               />
             </Panel>
           ))}
+
+          <Panel
+            title="Odalar & Hastane galerisi"
+            description="“05 · Odalar & Hastane” bölümündeki oda ve hastane fotoğrafları. İlk görsel büyük, diğerleri altında üçlü ızgarada gösterilir; sırayı oklarla değiştirebilirsiniz."
+          >
+            <ListEditor
+              items={value.gallery}
+              itemTitle={(item, index) => item.title || `Görsel ${index + 1}`}
+              onAdd={() =>
+                update((draft) => void draft.gallery.push({ src: "", title: "", alt: "" }))
+              }
+              onRemove={(index) => update((draft) => void draft.gallery.splice(index, 1))}
+              onMove={(index, direction) =>
+                update((draft) => moveItem(draft.gallery, index, direction))
+              }
+              minItems={1}
+              maxItems={12}
+              addLabel="Galeriye görsel ekle"
+              renderItem={(item, index) => (
+                <>
+                  <ImageField
+                    label={index === 0 ? "Görsel (büyük gösterilir)" : "Görsel"}
+                    hint="Yatay (4:3) fotoğraf önerilir."
+                    slot="galeri"
+                    src={item.src || undefined}
+                    onSrcChange={(src) => update((draft) => void (draft.gallery[index]!.src = src))}
+                    alt={item.alt}
+                    onAltChange={(alt) => update((draft) => void (draft.gallery[index]!.alt = alt))}
+                  />
+                  <TextField
+                    label="Başlık"
+                    hint="Görselin altında yazan kısa ad, örn. “Hasta odası”."
+                    value={item.title}
+                    onChange={(title) => update((draft) => void (draft.gallery[index]!.title = title))}
+                    maxLength={60}
+                  />
+                </>
+              )}
+            />
+          </Panel>
         </>
       )}
     </EditorShell>

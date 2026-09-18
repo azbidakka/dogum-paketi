@@ -1,14 +1,16 @@
 import Image from "next/image";
 import { ROOM_FEATURES } from "@/data/content";
-import { GALLERY, SITE } from "@/data/site";
+import { SITE } from "@/data/site";
+import type { GalleryItem } from "@/lib/content/schema";
 import Reveal from "@/components/Reveal";
 
 /**
  * Oda donanımı + hastane ortamı galerisi.
- * Görseller TUSA Hastanesi resmi galerisinden; donanım listesi Yatan Hasta Rehberi'nden.
+ * Görseller yönetim panelinden (varsayılan: TUSA Hastanesi resmi galerisi); donanım listesi
+ * Yatan Hasta Rehberi'nden.
  */
-export default function HospitalGallery() {
-  const [feature, ...rest] = GALLERY;
+export default function HospitalGallery({ items }: { items: GalleryItem[] }) {
+  const [feature, ...rest] = items;
 
   return (
     <div className="mt-16 lg:mt-20">
@@ -85,7 +87,7 @@ export default function HospitalGallery() {
 
       <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:mt-8 lg:gap-6">
         {rest.map((item, index) => (
-          <li key={item.src}>
+          <li key={`${item.src}-${index}`}>
             <Reveal delay={(index % 3) * 70}>
               <figure className="overflow-hidden rounded-[20px] border border-[var(--border-soft)] bg-white">
                 <div className="relative aspect-4/3 w-full bg-sand">

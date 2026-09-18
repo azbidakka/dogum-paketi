@@ -3,8 +3,9 @@ import { SITE } from "@/data/site";
 import HospitalGallery from "@/components/HospitalGallery";
 import Reveal from "@/components/Reveal";
 import SectionIntro from "@/components/SectionIntro";
+import type { GalleryItem } from "@/lib/content/schema";
 
-export default function RoomsSection() {
+export default function RoomsSection({ gallery }: { gallery: GalleryItem[] }) {
   return (
     <section id="hastane" className="scroll-mt-24 bg-cream py-20 lg:py-28">
       <div className="container-page">
@@ -51,7 +52,7 @@ export default function RoomsSection() {
           </Reveal>
         </div>
 
-        <HospitalGallery />
+        <HospitalGallery items={gallery} />
       </div>
     </section>
   );
