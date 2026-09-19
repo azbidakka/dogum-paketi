@@ -38,7 +38,7 @@ export default async function Page() {
         <AfterBirth />
         <EmotionalCTA image={content.images.cta} />
         <DoctorsSection doctors={doctors} />
-        <RoomsSection gallery={content.images.gallery} />
+        <RoomsSection rooms={content.rooms} gallery={content.images.gallery} />
         <PregnancyClass school={content.school} image={content.images.school} />
         <FAQ groups={content.faq.groups} />
         <ContactSection />

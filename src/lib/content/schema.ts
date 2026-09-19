@@ -139,6 +139,19 @@ export const galleryItemSchema = z.object({
   alt: requiredText(300),
 });
 
+export const roomsSchema = z.object({
+  title: requiredText(200),
+  accent: optionalText(120),
+  intro: requiredText(800),
+  facts: z
+    .array(z.object({ value: requiredText(40), label: requiredText(80) }))
+    .max(6, "En fazla 6 bilgi satırı eklenebilir."),
+  roomsTitle: requiredText(120),
+  roomsIntro: requiredText(600),
+  features: z.array(requiredText(160)).max(15, "En fazla 15 madde eklenebilir."),
+  roomsNote: optionalText(600),
+});
+
 export const imagesSchema = z.object({
   hero: imageSchema,
   tracking: imageSchema,
@@ -159,6 +172,7 @@ export const SECTION_SCHEMAS = {
   faq: faqSchema,
   doctors: doctorsSchema,
   school: schoolSchema,
+  rooms: roomsSchema,
   images: imagesSchema,
 } as const;
 
@@ -175,6 +189,7 @@ export type PackageContent = SiteContent["package"];
 export type FaqContent = SiteContent["faq"];
 export type DoctorsContent = SiteContent["doctors"];
 export type SchoolContent = SiteContent["school"];
+export type RoomsContent = SiteContent["rooms"];
 export type ImagesContent = SiteContent["images"];
 export type ImageContent = z.infer<typeof imageSchema>;
 export type GalleryItem = z.infer<typeof galleryItemSchema>;

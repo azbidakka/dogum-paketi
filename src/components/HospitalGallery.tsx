@@ -1,7 +1,6 @@
 import Image from "next/image";
-import { ROOM_FEATURES } from "@/data/content";
 import { SITE } from "@/data/site";
-import type { GalleryItem } from "@/lib/content/schema";
+import type { GalleryItem, RoomsContent } from "@/lib/content/schema";
 import Reveal from "@/components/Reveal";
 
 /**
@@ -9,7 +8,13 @@ import Reveal from "@/components/Reveal";
  * Görseller yönetim panelinden (varsayılan: TUSA Hastanesi resmi galerisi); donanım listesi
  * Yatan Hasta Rehberi'nden.
  */
-export default function HospitalGallery({ items }: { items: GalleryItem[] }) {
+export default function HospitalGallery({
+  rooms,
+  items,
+}: {
+  rooms: RoomsContent;
+  items: GalleryItem[];
+}) {
   const [feature, ...rest] = items;
 
   return (
@@ -18,16 +23,16 @@ export default function HospitalGallery({ items }: { items: GalleryItem[] }) {
         <Reveal>
           <p className="section-label">Odalar</p>
           <h3 className="mt-4 max-w-[20ch] font-display text-[clamp(1.25rem,4.4vw,1.45rem)] leading-[1.3] text-ink">
-            Doğum sonrası kalınan odalar
+            {rooms.roomsTitle}
           </h3>
           <p className="mt-5 max-w-[46ch] text-[0.9375rem] leading-relaxed text-text">
-            Odaya yerleştiğinizde servis ekibi odanın ve donanımının tanıtımını yapar. Hasta
-            odalarında şunlar bulunur:
+            {rooms.roomsIntro}
           </p>
 
+          {rooms.features.length > 0 ? (
           <ul className="mt-6 space-y-3">
-            {ROOM_FEATURES.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-[0.9375rem] text-text">
+            {rooms.features.map((item, index) => (
+              <li key={`${item}-${index}`} className="flex items-start gap-3 text-[0.9375rem] text-text">
                 <svg
                   width="18"
                   height="18"
@@ -48,6 +53,7 @@ export default function HospitalGallery({ items }: { items: GalleryItem[] }) {
               </li>
             ))}
           </ul>
+          ) : null}
 
           <p className="mt-6 max-w-[52ch] text-[0.8125rem] leading-relaxed text-muted">
             Kaynak:{" "}
@@ -59,8 +65,7 @@ export default function HospitalGallery({ items }: { items: GalleryItem[] }) {
             >
               Yatan Hasta Rehberi
             </a>
-            . Oda tipi ve hastanede kalış süresi; doğum şekline, anne ve bebeğin klinik durumuna
-            ve o dönemdeki oda uygunluğuna göre belirlenir.
+            .{rooms.roomsNote ? ` ${rooms.roomsNote}` : null}
           </p>
         </Reveal>
 

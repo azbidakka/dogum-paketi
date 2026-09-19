@@ -45,6 +45,12 @@ export default async function AdminHomePage() {
       text: "Hekim kartları, fotoğraflar, açıklamalar ve ilgi alanları.",
     },
     {
+      href: "/admin/odalar",
+      title: "Odalar & Hastane",
+      meta: `${content.rooms.features.length} oda donanımı · ${content.images.gallery.length} galeri görseli`,
+      text: "Bölüm başlığı, hastane bilgileri ve oda donanım listesi.",
+    },
+    {
       href: "/admin/gebe-okulu",
       title: "Gebe Okulu",
       meta: `${content.school.topics.length} program başlığı`,
@@ -53,7 +59,7 @@ export default async function AdminHomePage() {
     {
       href: "/admin/gorseller",
       title: "Görseller",
-      meta: "5 görsel alanı",
+      meta: `5 görsel alanı · ${content.images.gallery.length} galeri görseli`,
       text: "Sayfadaki ana görseller ve açıklama (alt) metinleri.",
     },
   ];

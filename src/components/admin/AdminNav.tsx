@@ -9,6 +9,7 @@ const ITEMS = [
   { href: "/admin/paket", label: "Doğum paketi" },
   { href: "/admin/sss", label: "Sık sorulanlar" },
   { href: "/admin/hekimler", label: "Hekimler" },
+  { href: "/admin/odalar", label: "Odalar & Hastane" },
   { href: "/admin/gebe-okulu", label: "Gebe Okulu" },
   { href: "/admin/gorseller", label: "Görseller" },
   { href: "/admin/eposta", label: "E-posta" },

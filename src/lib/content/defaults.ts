@@ -1,7 +1,9 @@
 import {
   FAQ_GROUPS,
   HERO_HIGHLIGHTS,
+  HOSPITAL_FACTS,
   PACKAGE_BIRTH,
+  ROOM_FEATURES,
   SCHOOL_TOPICS,
   TRIMESTERS,
 } from "@/data/content";
@@ -49,6 +51,19 @@ export const DEFAULT_CONTENT: SiteContent = {
     intro:
       "TUSA Hastanesi’nin dönemsel Gebe Okulu çalışmaları; anne adaylarının gebelik, doğuma hazırlık ve doğum sonrası süreç hakkında sağlık profesyonellerinden bilgi almasına yönelik içerikler sunabilir. Başlıklar döneme göre değişebilir; güncel program ve katılım bilgileri için hastanemizle iletişime geçebilirsiniz.",
     topics: SCHOOL_TOPICS.map((topic) => ({ title: topic.title, by: topic.by })),
+  },
+  rooms: {
+    title: "Doğum süreci, hastane ortamında bir",
+    accent: "ekip çalışmasıdır.",
+    intro:
+      "Gebelik ve doğum süreci yalnızca kadın hastalıkları ve doğum muayenesinden ibaret değildir. Gerektiğinde laboratuvar, görüntüleme, anestezi ve yenidoğan değerlendirmeleri sürecin farklı aşamalarında yer alabilir.",
+    facts: HOSPITAL_FACTS.map((fact) => ({ value: fact.value, label: fact.label })),
+    roomsTitle: "Doğum sonrası kalınan odalar",
+    roomsIntro:
+      "Odaya yerleştiğinizde servis ekibi odanın ve donanımının tanıtımını yapar. Hasta odalarında şunlar bulunur:",
+    features: [...ROOM_FEATURES],
+    roomsNote:
+      "Oda tipi ve hastanede kalış süresi; doğum şekline, anne ve bebeğin klinik durumuna ve o dönemdeki oda uygunluğuna göre belirlenir.",
   },
   images: {
     hero: {

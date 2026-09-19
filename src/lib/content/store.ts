@@ -153,6 +153,12 @@ const FIELD_LABELS: Record<string, string> = {
   school: "Gebe Okulu görseli",
   location: "Konum görseli",
   gallery: "Galeri görseli",
+  facts: "Bilgi satırı",
+  value: "Değer",
+  roomsTitle: "Oda başlığı",
+  roomsIntro: "Oda açıklaması",
+  features: "Oda donanımı",
+  roomsNote: "Alt not",
 };
 
 function formatIssues(error: z.ZodError): string[] {
